@@ -5,19 +5,22 @@
     /// </summary>
     internal static class DefaultRunners
     {
-        static IUpsertCommandRunner[] _runners;
+        static IUpsertCommandRunner[]? Runners;
 
         /// <summary>
         /// Returns the list of the default command runners
         /// </summary>
-        public static IUpsertCommandRunner[] Runners
-            => _runners ?? (_runners = new IUpsertCommandRunner[]
+        public static IUpsertCommandRunner[] GetRunners()
+        {
+            Runners ??= new IUpsertCommandRunner[]
             {
                 new InMemoryUpsertCommandRunner(),
                 new MySqlUpsertCommandRunner(),
                 new PostgreSqlUpsertCommandRunner(),
                 new SqlServerUpsertCommandRunner(),
                 new SqliteUpsertCommandRunner(),
-            });
+            };
+            return Runners;
+        }
     }
 }

@@ -16,10 +16,10 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, null, null);
@@ -33,17 +33,17 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)>[] entities = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)>[] entities = new[]
             {
                 new[]
                 {
-                    ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                    ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                    ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                    ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
                 },
                 new[]
                 {
-                    ( "Name", new ConstantValue("value") { ArgumentIndex = 2 }, (string)null ),
-                    ( "Status", new ConstantValue("status") { ArgumentIndex = 3}, (string)null ),
+                    ( "Name", new ConstantValue("value") { ArgumentIndex = 2 }, (string)null, true ),
+                    ( "Status", new ConstantValue("status") { ArgumentIndex = 3}, (string)null, true ),
                 },
             };
 
@@ -58,10 +58,10 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID1", false), ("ID2", true) }, null, null);
@@ -75,10 +75,10 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
@@ -96,17 +96,17 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)>[] entities = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)>[] entities = new[]
             {
                 new[]
                 {
-                    ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                    ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                    ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                    ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
                 },
                 new[]
                 {
-                    ( "Name", new ConstantValue("value") { ArgumentIndex = 2 }, (string)null ),
-                    ( "Status", new ConstantValue("status") { ArgumentIndex = 3}, (string)null ),
+                    ( "Name", new ConstantValue("value") { ArgumentIndex = 2 }, (string)null, true ),
+                    ( "Status", new ConstantValue("status") { ArgumentIndex = 3}, (string)null, true ),
                 },
             };
             var updates = new[]
@@ -125,14 +125,14 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
-                ("Name", (IKnownValue)new PropertyValue("Name", false) { Property = new MockProperty("Name") })
+                ("Name", (IKnownValue)new PropertyValue("Name", false, new MockProperty("Name")))
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, null);
@@ -146,14 +146,14 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
-                ("Name", (IKnownValue)new PropertyValue("Name", false) { Property = new MockProperty("Name2") })
+                ("Name", (IKnownValue)new PropertyValue("Name", false, new MockProperty("Name2")))
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, null);
@@ -167,15 +167,15 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Status", (IKnownValue)new KnownExpression(ExpressionType.Add,
-                    new PropertyValue("Status", true) { Property = new MockProperty("Status") },
+                    new PropertyValue("Status", true, new MockProperty("Status")),
                     new ConstantValue(1) { ArgumentIndex = 2 }))
             };
 
@@ -190,15 +190,15 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Status", (IKnownValue)new KnownExpression(ExpressionType.Coalesce,
-                    new PropertyValue("Status", true) { Property = new MockProperty("Status") },
+                    new PropertyValue("Status", true, new MockProperty("Status")),
                     new ConstantValue(1) { ArgumentIndex = 2 }))
             };
 
@@ -213,18 +213,18 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Status", (IKnownValue)new KnownExpression(ExpressionType.Multiply,
                     new KnownExpression(ExpressionType.Add,
-                        new PropertyValue("Status", true) { Property = new MockProperty("Status") },
+                        new PropertyValue("Status", true, new MockProperty("Status")),
                         new ConstantValue(1) { ArgumentIndex = 2 }),
-                    new PropertyValue("Status", false) { Property = new MockProperty("Status") }))
+                    new PropertyValue("Status", false, new MockProperty("Status"))))
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, null);
@@ -238,18 +238,18 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue(3) { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Status", (IKnownValue)new KnownExpression(ExpressionType.Add,
-                    new PropertyValue("Status", true) { Property = new MockProperty("Status") },
+                    new PropertyValue("Status", true, new MockProperty("Status")),
                     new KnownExpression(ExpressionType.Multiply,
                         new ConstantValue(1) { ArgumentIndex = 2 },
-                        new PropertyValue("Status", false) { Property = new MockProperty("Status") })))
+                        new PropertyValue("Status", false, new MockProperty("Status")))))
             };
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, null);
@@ -263,16 +263,16 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Name", (IKnownValue)new ConstantValue("newValue") { ArgumentIndex = 2 })
             };
-            var condition = new KnownExpression(ExpressionType.GreaterThan, new PropertyValue("Counter", true) { Property = new MockProperty("Counter") }, new ConstantValue(12) { ArgumentIndex = 3 });
+            var condition = new KnownExpression(ExpressionType.GreaterThan, new PropertyValue("Counter", true, new MockProperty("Counter")), new ConstantValue(12) { ArgumentIndex = 3 });
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, condition);
 
@@ -285,18 +285,18 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Name", (IKnownValue)new ConstantValue("newValue") { ArgumentIndex = 2 })
             };
             var condition = new KnownExpression(ExpressionType.AndAlso,
-                new KnownExpression(ExpressionType.GreaterThan, new PropertyValue("Counter", true) { Property = new MockProperty("Counter") }, new ConstantValue(12) { ArgumentIndex = 3 }),
-                new KnownExpression(ExpressionType.NotEqual, new PropertyValue("Status", true) { Property = new MockProperty("Status") }, new PropertyValue("Status", false) { Property = new MockProperty("Status") }));
+                new KnownExpression(ExpressionType.GreaterThan, new PropertyValue("Counter", true, new MockProperty("Counter")), new ConstantValue(12) { ArgumentIndex = 3 }),
+                new KnownExpression(ExpressionType.NotEqual, new PropertyValue("Status", true, new MockProperty("Status")), new PropertyValue("Status", false, new MockProperty("Status"))));
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, condition);
 
@@ -309,16 +309,16 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.Runners
         {
             var runner = GetRunner();
             var tableName = "myTable";
-            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)> entity = new[]
+            ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)> entity = new[]
             {
-                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null ),
-                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null ),
+                ( "Name", new ConstantValue("value") { ArgumentIndex = 0 }, (string)null, true ),
+                ( "Status", new ConstantValue("status") { ArgumentIndex = 1}, (string)null, true ),
             };
             var updates = new[]
             {
                 ("Name", (IKnownValue)new ConstantValue("newValue") { ArgumentIndex = 2 })
             };
-            var condition = new KnownExpression(ExpressionType.NotEqual, new PropertyValue("Counter", true) { Property = new MockProperty("Counter") }, new ConstantValue(null) { ArgumentIndex = 3 });
+            var condition = new KnownExpression(ExpressionType.NotEqual, new PropertyValue("Counter", true, new MockProperty("Counter")), new ConstantValue(null) { ArgumentIndex = 3 });
 
             var generatedSql = runner.GenerateCommand(tableName, new[] { entity }, new[] { ("ID", false) }, updates, condition);
 

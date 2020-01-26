@@ -15,14 +15,16 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
         /// <inheritdoc/>
         protected override string EscapeName(string name) => "[" + name + "]";
         /// <inheritdoc/>
-        protected override string SourcePrefix => "[S].";
+        protected override string? SourcePrefix => "[S].";
         /// <inheritdoc/>
-        protected override string TargetPrefix => "[T].";
+        protected override string? TargetPrefix => "[T].";
+        /// <inheritdoc/>
+        protected override int? MaxQueryParams => 2100;
 
         /// <inheritdoc/>
-        public override string GenerateCommand(string tableName, ICollection<ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)>> entities,
-            ICollection<(string ColumnName, bool IsNullable)> joinColumns, ICollection<(string ColumnName, IKnownValue Value)> updateExpressions,
-            KnownExpression updateCondition)
+        public override string GenerateCommand(string tableName, ICollection<ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)>> entities,
+            ICollection<(string ColumnName, bool IsNullable)> joinColumns, ICollection<(string ColumnName, IKnownValue Value)>? updateExpressions,
+            KnownExpression? updateCondition)
         {
             var result = new StringBuilder();
             result.Append($"MERGE INTO {tableName} WITH (HOLDLOCK) AS [T] USING ( VALUES (");
@@ -34,9 +36,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
                 ? $"(([S].[{c.ColumnName}] IS NULL AND [T].[{c.ColumnName}] IS NULL) OR ([S].[{c.ColumnName}] IS NOT NULL AND [T].[{c.ColumnName}] = [S].[{c.ColumnName}]))"
                 : $"[T].[{c.ColumnName}] = [S].[{c.ColumnName}]")));
             result.Append(" WHEN NOT MATCHED BY TARGET THEN INSERT (");
-            result.Append(string.Join(", ", entities.First().Select(e => EscapeName(e.ColumnName))));
+            result.Append(string.Join(", ", entities.First().Where(e => e.AllowInserts).Select(e => EscapeName(e.ColumnName))));
             result.Append(") VALUES (");
-            result.Append(string.Join(", ", entities.First().Select(e => EscapeName(e.ColumnName))));
+            result.Append(string.Join(", ", entities.First().Where(e => e.AllowInserts).Select(e => EscapeName(e.ColumnName))));
             result.Append(")");
             if (updateExpressions != null)
             {

@@ -15,14 +15,16 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
         /// <inheritdoc/>
         protected override string EscapeName(string name) => "\"" + name + "\"";
         /// <inheritdoc/>
-        protected override string SourcePrefix => "EXCLUDED.";
+        protected override string? SourcePrefix => "EXCLUDED.";
         /// <inheritdoc/>
-        protected override string TargetPrefix => "\"T\".";
+        protected override string? TargetPrefix => "\"T\".";
+        /// <inheritdoc/>
+        protected override int? MaxQueryParams => 32767;
 
         /// <inheritdoc/>
-        public override string GenerateCommand(string tableName, ICollection<ICollection<(string ColumnName, ConstantValue Value, string DefaultSql)>> entities,
-            ICollection<(string ColumnName, bool IsNullable)> joinColumns, ICollection<(string ColumnName, IKnownValue Value)> updateExpressions,
-            KnownExpression updateCondition)
+        public override string GenerateCommand(string tableName, ICollection<ICollection<(string ColumnName, ConstantValue Value, string DefaultSql, bool AllowInserts)>> entities,
+            ICollection<(string ColumnName, bool IsNullable)> joinColumns, ICollection<(string ColumnName, IKnownValue Value)>? updateExpressions,
+            KnownExpression? updateCondition)
         {
             var result = new StringBuilder();
             result.Append($"INSERT INTO {tableName} AS \"T\" (");
@@ -36,8 +38,8 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
             {
                 result.Append("UPDATE SET ");
                 result.Append(string.Join(", ", updateExpressions.Select((e, i) => $"{EscapeName(e.ColumnName)} = {ExpandValue(e.Value)}")));
-            if (updateCondition != null)
-                result.Append($" WHERE {ExpandExpression(updateCondition)}");
+                if (updateCondition != null)
+                    result.Append($" WHERE {ExpandExpression(updateCondition)}");
             }
             else
             {

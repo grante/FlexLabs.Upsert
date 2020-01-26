@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -15,7 +16,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Internal
         /// <param name="value">The value used in the expression</param>
         /// <param name="property">The property from which the value is taken</param>
         /// <param name="memberInfo">The memberInfo from which the value is taken</param>
-        public ConstantValue(object value, IProperty property = null, MemberInfo memberInfo = null)
+        public ConstantValue(object? value, IProperty? property = null, MemberInfo? memberInfo = null)
         {
             Value = value;
             Property = property;
@@ -25,17 +26,17 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Internal
         /// <summary>
         /// The value used in the expression
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
 
         /// <summary>
         /// The property from which the value is taken
         /// </summary>
-        public IProperty Property { get; }
+        public IProperty? Property { get; }
 
         /// <summary>
         /// The memberInfo from which the value is taken
         /// </summary>
-        public MemberInfo MemberInfo { get; }
+        public MemberInfo? MemberInfo { get; }
 
         /// <summary>
         /// The index of the argument that will be passed to the Db command
@@ -51,7 +52,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Internal
         /// <inheritdoc/>
         public IEnumerable<PropertyValue> GetPropertyValues()
         {
-            return new PropertyValue[0];
+            return Array.Empty<PropertyValue>();
         }
     }
 }

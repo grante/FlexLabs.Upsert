@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -22,10 +23,10 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         private readonly DbContext _dbContext;
         private readonly IEntityType _entityType;
         private readonly ICollection<TEntity> _entities;
-        private Expression<Func<TEntity, object>> _matchExpression = null;
-        private Expression<Func<TEntity, TEntity, TEntity>> _updateExpression = null;
-        private Expression<Func<TEntity, TEntity, bool>> _updateCondition = null;
-        private bool _noUpdate = false, _useExpressionCompiler = false;
+        private Expression<Func<TEntity, object>>? _matchExpression = null;
+        private Expression<Func<TEntity, TEntity, TEntity>>? _updateExpression = null;
+        private Expression<Func<TEntity, TEntity, bool>>? _updateCondition = null;
+        private RunnerQueryOptions _queryOptions;
 
         /// <summary>
         /// Initialise an instance of the UpsertCommandBuilder
@@ -38,6 +39,11 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
             _entities = entities;
 
             _entityType = dbContext.GetService<IModel>().FindEntityType(typeof(TEntity));
+
+            if (_entityType == null)
+            {
+                throw new InvalidOperationException(Resources.EntityTypeMustBeMappedInDbContext);
+            }
         }
 
         /// <summary>
@@ -48,9 +54,19 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         public UpsertCommandBuilder<TEntity> On(Expression<Func<TEntity, object>> match)
         {
             if (_matchExpression != null)
-                throw new InvalidOperationException($"Can't call {nameof(On)} twice!");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(On)));
 
             _matchExpression = match ?? throw new ArgumentNullException(nameof(match));
+            return this;
+        }
+
+        /// <summary>
+        /// Allows for a way to force allow matching rows on auto-generated columns
+        /// </summary>
+        /// <returns>The current instance of the UpsertCommandBuilder</returns>
+        public UpsertCommandBuilder<TEntity> AllowIdentityMatch()
+        {
+            _queryOptions.AllowIdentityMatch = true;
             return this;
         }
 
@@ -64,9 +80,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
             if (updater == null)
                 throw new ArgumentNullException(nameof(updater));
             if (_updateExpression != null)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} twice!");
-            if (_noUpdate)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} when {nameof(NoUpdate)} has been called, as they are mutually exclusive");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched)));
+            if (_queryOptions.NoUpdate)
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched), nameof(NoUpdate)));
 
             _updateExpression =
                 Expression.Lambda<Func<TEntity, TEntity, TEntity>>(
@@ -85,9 +101,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         public UpsertCommandBuilder<TEntity> WhenMatched(Expression<Func<TEntity, TEntity, TEntity>> updater)
         {
             if (_updateExpression != null)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} twice!");
-            if (_noUpdate)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} when {nameof(NoUpdate)} has been called, as they are mutually exclusive");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched)));
+            if (_queryOptions.NoUpdate)
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched), nameof(NoUpdate)));
 
             _updateExpression = updater ?? throw new ArgumentNullException(nameof(updater));
             return this;
@@ -103,9 +119,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
             if (condition == null)
                 throw new ArgumentNullException(nameof(condition));
             if (_updateCondition != null)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} twice!");
-            if (_noUpdate)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} when {nameof(NoUpdate)} has been called, as they are mutually exclusive");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched)));
+            if (_queryOptions.NoUpdate)
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched), nameof(NoUpdate)));
 
             _updateCondition =
                 Expression.Lambda<Func<TEntity, TEntity, bool>>(
@@ -124,9 +140,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         public UpsertCommandBuilder<TEntity> UpdateIf(Expression<Func<TEntity, TEntity, bool>> condition)
         {
             if (_updateCondition != null)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} twice!");
-            if (_noUpdate)
-                throw new InvalidOperationException($"Can't call {nameof(WhenMatched)} when {nameof(NoUpdate)} has been called, as they are mutually exclusive");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched)));
+            if (_queryOptions.NoUpdate)
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(WhenMatched), nameof(NoUpdate)));
 
             _updateCondition = condition ?? throw new ArgumentNullException(nameof(condition));
             return this;
@@ -140,7 +156,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         /// <returns></returns>
         public UpsertCommandBuilder<TEntity> WithFallbackExpressionCompiler()
         {
-            _useExpressionCompiler = true;
+            _queryOptions.UseExpressionCompiler = true;
             return this;
         }
 
@@ -151,9 +167,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         public UpsertCommandBuilder<TEntity> NoUpdate()
         {
             if (_updateExpression != null)
-                throw new InvalidOperationException($"Can't call {nameof(NoUpdate)} when {nameof(WhenMatched)} has been called, as they are mutually exclusive");
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.CantCallMethodTwice, nameof(NoUpdate), nameof(WhenMatched)));
 
-            _noUpdate = true;
+            _queryOptions.NoUpdate = true;
             return this;
         }
 
@@ -161,10 +177,10 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
         {
             var dbProvider = _dbContext.GetService<IDatabaseProvider>();
             var commandRunner = _dbContext.GetInfrastructure().GetServices<IUpsertCommandRunner>()
-                .Concat(DefaultRunners.Runners)
+                .Concat(DefaultRunners.GetRunners())
                 .FirstOrDefault(r => r.Supports(dbProvider.Name));
             if (commandRunner == null)
-                throw new NotSupportedException("Database provider not supported yet!");
+                throw new NotSupportedException(Resources.DatabaseProviderNotSupportedYet);
 
             return commandRunner;
         }
@@ -178,7 +194,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
                 return 0;
 
             var commandRunner = GetCommandRunner();
-            return commandRunner.Run(_dbContext, _entityType, _entities, _matchExpression, _updateExpression, _updateCondition, _noUpdate, _useExpressionCompiler);
+            return commandRunner.Run(_dbContext, _entityType, _entities, _matchExpression, _updateExpression, _updateCondition, _queryOptions);
         }
 
         /// <summary>
@@ -192,7 +208,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert
                 return Task.FromResult(0);
 
             var commandRunner = GetCommandRunner();
-            return commandRunner.RunAsync(_dbContext, _entityType, _entities, _matchExpression, _updateExpression, _updateCondition, _noUpdate, _useExpressionCompiler, token);
+            return commandRunner.RunAsync(_dbContext, _entityType, _entities, _matchExpression, _updateExpression, _updateCondition, _queryOptions, token);
         }
     }
 }

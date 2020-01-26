@@ -35,21 +35,21 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.EF.Base
                 modelBuilder.Entity<NullableRequired>().Property(e => e.Text).HasDefaultValue("B");
         }
 
-        public DbSet<TestEntity> TestEntities { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<DashTable> DashTable { get; set; }
-        public DbSet<JsonData> JsonDatas { get; set; }
-        public DbSet<PageVisit> PageVisits { get; set; }
-        public DbSet<SchemaTable> SchemaTable { get; set; }
-        public DbSet<Status> Statuses { get; set; }
-        public DbSet<GuidKeyAutoGen> GuidKeysAutoGen { get; set; }
         public DbSet<GuidKey> GuidKeys { get; set; }
-        public DbSet<StringKeyAutoGen> StringKeysAutoGen { get; set; }
-        public DbSet<StringKey> StringKeys { get; set; }
+        public DbSet<GuidKeyAutoGen> GuidKeysAutoGen { get; set; }
+        public DbSet<JsonData> JsonDatas { get; set; }
         public DbSet<KeyOnly> KeyOnlies { get; set; }
         public DbSet<NullableCompositeKey> NullableCompositeKeys { get; set; }
         public DbSet<NullableRequired> NullableRequireds { get; set; }
+        public DbSet<PageVisit> PageVisits { get; set; }
+        public DbSet<SchemaTable> SchemaTable { get; set; }
+        public DbSet<Status> Statuses { get; set; }
+        public DbSet<StringKey> StringKeys { get; set; }
+        public DbSet<StringKeyAutoGen> StringKeysAutoGen { get; set; }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         public enum DbDriver
         {
@@ -78,7 +78,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Tests.EF.Base
                     options.UseInMemoryDatabase(connectionString);
                     break;
                 case DbDriver.Sqlite:
-#if !EFCORE3
+#if SQLITE_LEGACY
                     // If we are on Windows platform, we can copy Sqlite 3.24.0 binary to the output directory.
                     // The dynamic libraries in the current execution path will load first.
                     if (Environment.OSVersion.Platform == PlatformID.Win32NT)
