@@ -111,7 +111,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Internal
                 case ExpressionType.NewArrayInit:
                     {
                         var arrayExp = (NewArrayExpression)expression;
-                        var result = Array.CreateInstance(arrayExp.Type.GetElementType(), arrayExp.Expressions.Count);
+                        var result = Array.CreateInstance(arrayExp.Type.GetElementType()!, arrayExp.Expressions.Count);
                         for (int i = 0; i < arrayExp.Expressions.Count; i++)
                             result.SetValue(arrayExp.Expressions[i].GetValueInternal<TSource>(container, propertyFinder, useExpressionCompiler, true), i);
                         return result;
