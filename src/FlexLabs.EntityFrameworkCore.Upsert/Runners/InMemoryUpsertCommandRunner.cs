@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,9 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
                 {
                     foreach (var prop in properties)
                     {
+                        if (prop == null)
+                            continue;
+
                         var property = entityType.FindProperty(prop.Name);
                         prop.SetValue(dbEntity, prop.GetValue(newEntity) ?? property.GetDefaultValue());
                     }
