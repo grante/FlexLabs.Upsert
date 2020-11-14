@@ -13,6 +13,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
+// TODO: This suppresses an obsolescence warning for the call .GetColumnName()
+#pragma warning disable 0618
+
+
 namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
 {
     /// <summary>

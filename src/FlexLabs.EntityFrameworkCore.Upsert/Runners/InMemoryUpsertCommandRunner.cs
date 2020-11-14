@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +110,7 @@ namespace FlexLabs.EntityFrameworkCore.Upsert.Runners
                     .ToArray();
 
             // If we're resorting to matching on PKs, we'll have to load them manually
-            object[] getPKs(TEntity entity)
+            object?[] getPKs(TEntity entity)
             {
                 return entityType.FindPrimaryKey()
                     .Properties
